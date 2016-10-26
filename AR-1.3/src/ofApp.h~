@@ -1,0 +1,103 @@
+#include "ofMain.h"
+#include "ofxAssimpModelLoader.h"
+#include <opencv2/core/core.hpp>
+#include "ORBMatcher.h"
+
+#undef Success 
+
+#include "System.h"
+#include "MapPoint.h"
+
+
+class ofApp : public ofBaseApp{
+
+ public:
+  void setup();
+  void update();
+  void draw();
+
+  void keyPressed(int key);
+  void keyReleased(int key);
+  void mouseMoved(int x, int y );
+  void mouseDragged(int x, int y, int button);
+  void mousePressed(int x, int y, int button);
+  void mouseReleased(int x, int y, int button);
+  void windowResized(int w, int h);
+  void dragEvent(ofDragInfo dragInfo);
+  void gotMessage(ofMessage msg);
+  //void setSlam(ORB_SLAM2::System* pSLAM);
+  //ORB_SLAM2::System getSlam();
+
+  
+  void enableDebug();//debug模式
+  void computeIntersection(Mat ptIn,Mat& ptOut,Mat plane);//计算一个点在平面上的投影
+  void computeMoveAngle(cv::Point3f pt1, cv::Point3f pt2,float &angle);//计算模型移动时旋转的角度(绕y轴旋转)
+
+ private:
+  void intrinsicMatrix2ProjectionMatrix(cv::Mat& camera_matrix, float width, float height, float near_plane, float far_plane, float* projection_matrix);
+  void extrinsicMatrix2ModelViewMatrix(cv::Mat& rotation, cv::Mat& translation, float* model_view_matrix);
+  void myDrawPlane(Mat centerPt,Mat plane,int rows,int cols,float scale);
+
+ private:
+  std::vector<ofxAssimpModelLoader> m_models;
+  //std::vector<ofMesh> m_meshes;
+  ofLight	m_light;
+
+  ofVideoGrabber m_video;	
+  ofEasyCam m_camera;
+  ofxAssimpModelLoader m_model;
+		
+  vector<cv::Point3f> m_corners_3d;
+
+  cv::Mat m_camera_matrix;
+  cv::Mat m_dist_coeff;
+  cv::Mat m_r[16];
+  cv::Mat m_t[16];
+  cv::Mat m_pt;//中心点
+  cv::Mat m_direction;//法向量
+
+  //模型2
+  cv::Mat m_pt1;
+  cv::Mat m_pt2;
+  bool m_bAdd;
+  ofxAssimpModelLoader m_model2;
+  float m_scale;
+
+  //模型是否显示
+  bool m_bShow1;
+  bool m_bShow2;
+
+  //marker,用于测试
+  std::vector<cv::Mat> m_vMarkerPt;
+
+  //loop detect count
+  int m_LoopCount;
+
+  //平面参考点,与m_pt m_pt2构成平面
+  bool m_bMove;                //按下上下左右键控制移动
+  bool m_bAutoMove;            //按下m键自动移动,pt->pt3->pt2
+  cv::Mat m_pt3;
+  cv::Mat m_movePlane;
+  int m_nMoveIndex;
+  std::vector<cv::Mat> m_vPathPts;    //移动过程中的标记点
+  std::vector<cv::Mat> m_vTrajectory; //移动时实际经过的点
+  float mWorldScale;                  //标定marker时算出实际世界与slam世界的尺度比例
+
+  float m_projection_matrix[16];
+  float m_model_view_matrix[16];
+
+  cv::Mat m_img_gray;
+  cv::Mat m_img_color;
+  cv::Mat m_img_track;
+  cv::Mat m_camPose;
+  cv::Mat m_target;
+
+  std::vector<cv::Mat> mTrajectory;
+
+ public:
+  ORB_SLAM2::System *m_pSLAM;
+  ORBMatcher *m_pORB;
+  bool m_bDetected;
+  int m_state;
+  bool m_bDebug = false;
+};
