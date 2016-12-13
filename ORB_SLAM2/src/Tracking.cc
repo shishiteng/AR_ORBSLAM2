@@ -984,7 +984,7 @@ void Tracking::MonocularInitialization() {
       mCurrentFrame.SetPose(Tcw);
 
       //sst
-      UpdatePoseWithIMU();
+      //UpdatePoseWithIMU();
 
       cout << "------------------------Track-------------------------" << endl;
       cout << "System is not initialized,monocular init." << endl;
@@ -1142,7 +1142,7 @@ bool Tracking::TrackReferenceKeyFrame() {
   mCurrentFrame.mvpMapPoints = vpMapPointMatches;
   mCurrentFrame.SetPose(mLastFrame.mTcw);
   cout << "[TrackReferenceKeyFrame]set pose:\n";
-  UpdatePoseWithIMU();
+  //UpdatePoseWithIMU();
   
 
   Optimizer::PoseOptimization(&mCurrentFrame);
@@ -1239,7 +1239,7 @@ bool Tracking::TrackWithMotionModel() {
   cout << "[TrackWithMotionModel]set pose:" << endl;
   mCurrentFrame.SetPose(mVelocity * mLastFrame.mTcw);
   cout << mVelocity << endl << mLastFrame.mTcw << endl << mCurrentFrame.mTcw << endl;
-  UpdatePoseWithIMU();
+  //UpdatePoseWithIMU();
   
 
   fill(mCurrentFrame.mvpMapPoints.begin(), mCurrentFrame.mvpMapPoints.end(),
